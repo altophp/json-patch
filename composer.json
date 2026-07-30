@@ -21,10 +21,10 @@
             "email": "smn.andre@gmail.com"
         }
     ],
-    "homepage": "https://github.com/phpalto/json-patch",
+    "homepage": "https://github.com/altophp/json-patch",
     "support": {
-        "issues": "https://github.com/phpalto/json-patch/issues",
-        "docs": "https://github.com/phpalto/json-patch#readme"
+        "issues": "https://github.com/altophp/json-patch/issues",
+        "docs": "https://github.com/altophp/json-patch#readme"
     },
     "funding": [
         {

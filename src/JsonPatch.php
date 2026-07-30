@@ -790,7 +790,7 @@ final class JsonPatch
                 // Element in $to but not in LCS - need to add
                 $addOps[] = ['index' => $j - 1, 'value' => $to[$j - 1]];
                 --$j;
-            } elseif ($i > 0 && (0 === $j || $lcs[$i][$j - 1] < $lcs[$i - 1][$j])) {
+            } elseif (0 === $j || $lcs[$i][$j - 1] < $lcs[$i - 1][$j]) {
                 // Element in $from but not in LCS - need to remove
                 $removeOps[] = ['index' => $i - 1];
                 --$i;
