@@ -9,12 +9,12 @@ Built for systems where change history matters.
 
 ---
 
-&nbsp; [![PHP Version](https://img.shields.io/badge/PHP-8.3+-ffefdf?logoColor=white&labelColor=000)](https://github.com/PhpAlto/json-patch)
-&nbsp; [![CI](https://img.shields.io/github/actions/workflow/status/PhpAlto/json-patch/CI.yml?branch=main&label=Tests&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](https://github.com/PhpAlto/json-patch/actions)
+&nbsp; [![PHP Version](https://img.shields.io/badge/PHP-8.3+-ffefdf?logoColor=white&labelColor=000)](https://github.com/altophp/json-patch)
+&nbsp; [![CI](https://img.shields.io/github/actions/workflow/status/altophp/json-patch/CI.yml?branch=main&label=Tests&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](https://github.com/altophp/json-patch/actions)
 &nbsp; [![Packagist Version](https://img.shields.io/packagist/v/alto/json-patch?label=Stable&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](https://packagist.org/packages/alto/json-patch)
-&nbsp; [![PHP Version](https://img.shields.io/badge/PHPUnit-100%25-ffefdf?logoColor=white&labelColor=000)](https://github.com/PhpAlto/json-patch)
-&nbsp; [![PHP Version](https://img.shields.io/badge/PHPStan-LVL%2010-ffefdf?logoColor=white&labelColor=000)](https://github.com/PhpAlto/json-patch)
-&nbsp; [![License](https://img.shields.io/github/license/PhpAlto/json-patch?label=License&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](./LICENSE)
+&nbsp; [![PHP Version](https://img.shields.io/badge/PHPUnit-100%25-ffefdf?logoColor=white&labelColor=000)](https://github.com/altophp/json-patch)
+&nbsp; [![PHP Version](https://img.shields.io/badge/PHPStan-LVL%2010-ffefdf?logoColor=white&labelColor=000)](https://github.com/altophp/json-patch)
+&nbsp; [![License](https://img.shields.io/github/license/altophp/json-patch?label=License&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](./LICENSE)
 
 * **Pure PHP**: Tiny surface area, no heavy dependencies.
 * **Strict Types**: Built for PHP 8.3+ with strict typing.
