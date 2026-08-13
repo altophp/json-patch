@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of the ALTO library.
  *
- * © 2026–present Simon André
+ * © 2026-present Simon André
  *
  * For full copyright and license information, please see
  * the LICENSE file distributed with this source code.
@@ -58,12 +58,12 @@ final class JsonPatch
     {
         $doc = json_decode($documentJson, true, flags: $jsonDecodeFlags);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new JsonPatchException('Invalid document JSON: '.json_last_error_msg());
+            throw new JsonPatchException('Invalid document JSON: ' . json_last_error_msg());
         }
 
         $patch = json_decode($patchJson, true, flags: $jsonDecodeFlags);
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new JsonPatchException('Invalid patch JSON: '.json_last_error_msg());
+            throw new JsonPatchException('Invalid patch JSON: ' . json_last_error_msg());
         }
 
         if (!is_array($patch) || !array_is_list($patch)) {
@@ -304,7 +304,7 @@ final class JsonPatch
 
         // RFC 6902 Section 4.4: "from" must not be a proper prefix of "path"
         $pathStr = $path->toString();
-        if ($pathStr !== $from && str_starts_with($pathStr, $from.'/')) {
+        if ($pathStr !== $from && str_starts_with($pathStr, $from . '/')) {
             throw new InvalidOperationException(sprintf('Operation %d (move): \'from\' cannot be a proper prefix of \'path\'.', $index));
         }
 
@@ -350,7 +350,7 @@ final class JsonPatch
         $actual = $path->isRoot() ? $document : self::getAt($document, $path);
 
         if (!self::deepEquals($actual, $expected)) {
-            throw new TestFailedException('Test failed at path: '.$path->toString());
+            throw new TestFailedException('Test failed at path: ' . $path->toString());
         }
 
         return $document;
@@ -417,7 +417,7 @@ final class JsonPatch
     private static function readChild(mixed $current, string $segment, string $fullPath): mixed
     {
         if (!is_array($current)) {
-            throw new TypeMismatchException('Non-container encountered at: '.$fullPath);
+            throw new TypeMismatchException('Non-container encountered at: ' . $fullPath);
         }
 
         if (array_is_list($current)) {
@@ -427,7 +427,7 @@ final class JsonPatch
         }
 
         if (!array_key_exists($segment, $current)) {
-            throw new PathNotFoundException('Path does not exist: '.$fullPath);
+            throw new PathNotFoundException('Path does not exist: ' . $fullPath);
         }
 
         return $current[$segment];
@@ -840,9 +840,9 @@ final class JsonPatch
         $seg = str_replace(['~', '/'], ['~0', '~1'], $segment);
 
         if ('' === $base) {
-            return '/'.$seg;
+            return '/' . $seg;
         }
 
-        return $base.'/'.$seg;
+        return $base . '/' . $seg;
     }
 }

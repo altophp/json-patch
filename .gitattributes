@@ -1,6 +1,14 @@
-/.git*                      export-ignore
-/.php-cs-fixer.dist.php     export-ignore
-/phpstan.dist.neon          export-ignore
-/phpunit.dist.xml           export-ignore
-/docs/                      export-ignore
-/tests/                     export-ignore
+* text=auto eol=lf
+
+/.editorconfig               export-ignore
+/.gitattributes              export-ignore
+/.github                     export-ignore
+/.gitignore                  export-ignore
+/.php-cs-fixer.dist.php      export-ignore
+/docs                        export-ignore
+/phpstan.neon.dist           export-ignore
+/phpunit.xml.dist            export-ignore
+/tests                       export-ignore
+
+/docs/**                     linguist-documentation
+/tests/fixtures/**           -linguist-detectable

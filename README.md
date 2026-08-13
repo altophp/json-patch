@@ -1,43 +1,45 @@
-# ALTO \ JSON Patch
+# ALTO JSON Patch
 
-A strict, auditable [JSON Patch](https://en.wikipedia.org/wiki/JSON_Patch) implementation for PHP 8.3+. This library handles two concerns with precision:
+Strict RFC 6902 patching and deterministic diffs for PHP.
 
-1. **Apply**: A deterministic **[RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)** engine that replays patches exactly.
-2. **Diff**: A smart diff generator that produces stable, readable patches.
+&nbsp; ![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-00B7FF?logoColor=00B7FF&labelColor=050608)
+&nbsp; ![CI](https://img.shields.io/github/actions/workflow/status/altophp/json-patch/CI.yml?branch=main&label=Tests&labelColor=050608&color=00B7FF)
+&nbsp; [![Packagist](https://img.shields.io/packagist/v/alto/json-patch?label=Packagist&labelColor=050608&color=00B7FF)](https://packagist.org/packages/alto/json-patch)
+&nbsp; ![License](https://img.shields.io/github/license/altophp/json-patch?label=License&labelColor=050608&color=00B7FF)
+&nbsp; [![GitHub Sponsors](https://img.shields.io/github/sponsors/smnandre?logo=githubsponsors&logoColor=00B7FF&label=%20Sponsor&labelColor=050608&color=00B7FF)](https://github.com/sponsors/smnandre)
 
-Built for systems where change history matters.
+ALTO JSON Patch applies all six JSON Patch operations and generates stable patches between PHP
+values. Its identity-aware list diffing can express moves and nested changes instead of replacing
+complete lists, keeping generated patches compact and readable.
 
----
+```php
+use Alto\JsonPatch\JsonPatch;
 
-&nbsp; [![PHP Version](https://img.shields.io/badge/PHP-8.3+-ffefdf?logoColor=white&labelColor=000)](https://github.com/altophp/json-patch)
-&nbsp; [![CI](https://img.shields.io/github/actions/workflow/status/altophp/json-patch/CI.yml?branch=main&label=Tests&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](https://github.com/altophp/json-patch/actions)
-&nbsp; [![Packagist Version](https://img.shields.io/packagist/v/alto/json-patch?label=Stable&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](https://packagist.org/packages/alto/json-patch)
-&nbsp; [![PHP Version](https://img.shields.io/badge/PHPUnit-100%25-ffefdf?logoColor=white&labelColor=000)](https://github.com/altophp/json-patch)
-&nbsp; [![PHP Version](https://img.shields.io/badge/PHPStan-LVL%2010-ffefdf?logoColor=white&labelColor=000)](https://github.com/altophp/json-patch)
-&nbsp; [![License](https://img.shields.io/github/license/altophp/json-patch?label=License&logoColor=white&logoSize=auto&labelColor=000&color=ffefdf)](./LICENSE)
+$before = ['status' => 'draft', 'tags' => ['php']];
+$after = ['status' => 'published', 'tags' => ['php', 'json']];
 
-* **Pure PHP**: Tiny surface area, no heavy dependencies.
-* **Strict Types**: Built for PHP 8.3+ with strict typing.
-* **Deterministic**: Error model designed for auditability.
-* **Smart Diffing**: Supports standard list replacement or smart "by-id" list diffing for readable patches.
+$patch = JsonPatch::diff($before, $after);
+$result = JsonPatch::apply($before, $patch);
+
+assert($after === $result);
+```
+
+The package has no runtime dependencies beyond PHP's JSON extension. Its test suite includes the
+RFC 6902 compliance corpus, and the codebase is analyzed at PHPStan level 10.
 
 ## Installation
+
+Install ALTO JSON Patch with Composer:
 
 ```bash
 composer require alto/json-patch
 ```
 
-## Why Alto JSON Patch?
-
-**For audit logs**: Deterministic apply means you can verify patch integrity. Store the parent hash, the patch, and the
-result hash. Replaying the patch will always produce the same result.
-
-**For readable diffs**: Generate clean patches that humans can review. Optional identity-based list diffing produces
-granular operations instead of replacing entire arrays.
-
-**For reliability**: Pure PHP with strict types. No magic, no surprises.
+ALTO JSON Patch requires PHP 8.3 or later and the JSON extension. The extension ships with PHP.
 
 ## Quick Start
+
+Apply a sequence of operations to an in-memory value:
 
 ```php
 use Alto\JsonPatch\JsonPatch;
@@ -53,162 +55,97 @@ $patch = [
 ];
 
 $result = JsonPatch::apply($document, $patch);
-// ['user' => ['name' => 'Alice', 'role' => 'admin'], 'status' => 'published']
 ```
 
-## Generate Patches
+The original value is unchanged. Operations run in order, and each operation sees the result of
+the preceding one.
 
-Create patches automatically by diffing two states:
+## Applying Patches
+
+`JsonPatch::apply()` supports every RFC 6902 operation:
+
+| Operation | Effect |
+| --- | --- |
+| `add` | Insert or replace a value |
+| `remove` | Delete an existing value |
+| `replace` | Replace an existing value |
+| `move` | Move a value to another path |
+| `copy` | Copy a value to another path |
+| `test` | Assert that a value matches |
+
+Use `JsonPatch::applyJson()` to work directly with JSON strings. Read
+[Applying patches](docs/applying.md) for path rules, validation, JSON handling, and failures.
+
+## Generating Patches
+
+Generate the operations needed to transform one state into another:
 
 ```php
-$before = ['version' => 1, 'status' => 'draft'];
-$after = ['version' => 2, 'status' => 'published', 'author' => 'Alice'];
-
-$patch = JsonPatch::diff($before, $after);
-// [
-//     ['op' => 'replace', 'path' => '/version', 'value' => 2],
-//     ['op' => 'replace', 'path' => '/status', 'value' => 'published'],
-//     ['op' => 'add', 'path' => '/author', 'value' => 'Alice'],
-// ]
+$patch = JsonPatch::diff(
+    ['version' => 1, 'status' => 'draft'],
+    ['version' => 2, 'status' => 'published'],
+);
 ```
 
-## Smart List Diffing
+Object keys are compared recursively. Lists use a longest common subsequence by default, producing
+stable `add` and `remove` operations while preserving unchanged items.
 
-By default, lists are replaced entirely when they differ. For granular control, use identity-based diffing:
+## Identity-aware Lists
+
+Configure an identity key to express item moves and nested changes:
 
 ```php
 use Alto\JsonPatch\DiffOptions;
 
-$before = [
-    'items' => [
-        ['id' => 'a', 'qty' => 1],
-        ['id' => 'b', 'qty' => 2],
-    ],
-];
+$options = new DiffOptions(
+    listIdentityByPointer: ['/items' => 'id'],
+);
 
-$after = [
-    'items' => [
-        ['id' => 'b', 'qty' => 3],  // Modified and reordered
-        ['id' => 'c', 'qty' => 1],  // Added
-    ],
-];
-
-$options = new DiffOptions(['/items' => 'id']);
 $patch = JsonPatch::diff($before, $after, $options);
-// Generates move, add, remove, and replace operations for individual items
 ```
 
-This produces readable patches where reviewers can see exactly which items changed.
+Read [Generating patches](docs/diffing.md) for list strategies and their fallback behavior.
 
-## Utility Methods
+## JSON Pointers
+
+Patch paths follow RFC 6901. Use `JsonPatch::get()` and `JsonPatch::test()` to inspect values at a
+path, or `Pointer` when another component needs to parse and compose paths.
 
 ```php
-// Get a value at a JSON pointer path
 $name = JsonPatch::get($document, '/user/name');
-
-// Test if a value matches (returns bool)
 $isAdmin = JsonPatch::test($document, '/user/role', 'admin');
-
-// Validate patch structure without applying
-$errors = JsonPatch::validate($patch);
 ```
 
-## Audit Trail Example
+Read [JSON Pointers](docs/pointers.md) for root paths, list indices, and escaping. The
+[complete guide](docs/index.md) also covers installation and a first end-to-end patch.
 
-```php
-class ChangeLog
-{
-    public function recordChange(array $before, array $after): void
-    {
-        $patch = JsonPatch::diff($before, $after);
+## Contributing
 
-        $this->store([
-            'parent_hash' => hash('sha256', json_encode($before)),
-            'patch' => $patch,
-            'result_hash' => hash('sha256', json_encode($after)),
-            'timestamp' => time(),
-        ]);
-    }
+Contributions of all kinds are welcome. Visit the
+[project on GitHub](https://github.com/altophp/json-patch) to
+[report a bug](https://github.com/altophp/json-patch/issues/new),
+[suggest a feature](https://github.com/altophp/json-patch/issues/new), or
+[open a pull request](https://github.com/altophp/json-patch/pulls).
 
-    public function verifyIntegrity(string $recordId): bool
-    {
-        $record = $this->fetch($recordId);
-        $parent = $this->reconstructState($record['parent_hash']);
+Before submitting code, run:
 
-        $result = JsonPatch::apply($parent, $record['patch']);
-        $computedHash = hash('sha256', json_encode($result));
-
-        return $computedHash === $record['result_hash'];
-    }
-}
+```bash
+# Runs PHP CS Fixer, PHPStan, and PHPUnit
+composer qa
 ```
 
-## Supported Operations
+Changes to public behavior should include tests and documentation.
 
-All RFC 6902 operations:
+## Support
 
-- `add`: Add a value at a path
-- `remove`: Remove a value at a path
-- `replace`: Replace a value at a path
-- `move`: Move a value from one path to another
-- `copy`: Copy a value from one path to another
-- `test`: Assert a value matches (useful for conditional patches)
+ALTO JSON Patch is open source. You can support its continued development through
+[GitHub Sponsors](https://github.com/sponsors/smnandre).
 
-## Error Handling
-
-Operations throw `JsonPatchException` with clear messages:
-
-```php
-try {
-    JsonPatch::apply($doc, $patch);
-} catch (JsonPatchException $e) {
-    // "Operation 0 (replace): path '/missing/path' not found."
-    // "Operation 1 (add): invalid path '/items/-1'."
-}
-```
-
-## Advanced Usage
-
-### Float Comparison
-`JsonPatch` uses strict equality (`===`) for values. Be aware that `json_decode` may treat numbers differently depending on flags.
-For example, `1.0` (float) is not strictly equal to `1` (int). Ensure your input documents use consistent types if strict equality is required.
-
-## Limitations
-
-### `applyJson`: Empty Object vs Array
-
-When using `JsonPatch::applyJson()`, the underlying `json_decode` converts empty JSON objects `{}` into empty PHP arrays
-`[]`.
-Since PHP does not distinguish between empty associative arrays (objects) and empty indexed arrays (lists), an input of
-`{"key": {}}` may result in `{"key": []}` after a round-trip.
-If strictly preserving `{}` vs `[]` is critical, consider using `apply()` with pre-decoded structures where you can
-control the object mapping (e.g. `json_decode($json, false)` for `stdClass`).
-
-## API Reference
-
-### `JsonPatch`
-
-| Method                                                                  | Description                              |
-|-------------------------------------------------------------------------|------------------------------------------|
-| `apply(array $doc, array $patch): array`                                | Apply a patch to a document              |
-| `applyJson(string $docJson, string $patchJson, int $flags = 0): string` | Apply patch to JSON string               |
-| `diff(array $from, array $to, ?DiffOptions $opts = null): array`        | Generate patch from two states           |
-| `get(array $doc, string $path): mixed`                                  | Get value at JSON pointer path           |
-| `test(array $doc, string $path, mixed $value): bool`                    | Test if value matches at path            |
-| `validate(array $patch): array`                                         | Validate patch structure, returns errors |
-
-### `DiffOptions`
-
-Configure identity-based list diffing:
-
-```php
-$options = new DiffOptions([
-    '/users' => 'id',        // Use 'id' field for /users array
-    '/items' => 'sku',       // Use 'sku' field for /items array
-]);
-```
+Sharing this package with others or
+[starring it on GitHub](https://github.com/altophp/json-patch) is also much
+appreciated.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-````
+ALTO JSON Patch is released by [ALTO PHP](https://altophp.com) under the
+[MIT License](LICENSE).
