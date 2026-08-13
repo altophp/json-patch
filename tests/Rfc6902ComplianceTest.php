@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of the ALTO library.
  *
- * © 2026–present Simon André
+ * © 2026-present Simon André
  *
  * For full copyright and license information, please see
  * the LICENSE file distributed with this source code.
@@ -56,7 +56,7 @@ final class Rfc6902ComplianceTest extends TestCase
      */
     public static function provideSpecTests(): iterable
     {
-        yield from self::loadTestFile(__DIR__.'/fixtures/json-patch-tests/spec_tests.json', 'spec');
+        yield from self::loadTestFile(__DIR__ . '/fixtures/json-patch-tests/spec_tests.json', 'spec');
     }
 
     /**
@@ -64,7 +64,7 @@ final class Rfc6902ComplianceTest extends TestCase
      */
     public static function provideMainTests(): iterable
     {
-        yield from self::loadTestFile(__DIR__.'/fixtures/json-patch-tests/tests.json', 'main');
+        yield from self::loadTestFile(__DIR__ . '/fixtures/json-patch-tests/tests.json', 'main');
     }
 
     /**

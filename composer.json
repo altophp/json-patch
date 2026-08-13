@@ -1,6 +1,6 @@
 {
     "name": "alto/json-patch",
-    "description": "A PHP JSON-Patch library based on RFC 6902 for generating smart diffs, applying patches, and rebuilding data structures.",
+    "description": "Strict RFC 6902 patching and deterministic diffs for PHP.",
     "license": "MIT",
     "type": "library",
     "keywords": [
@@ -21,10 +21,11 @@
             "email": "smn.andre@gmail.com"
         }
     ],
-    "homepage": "https://github.com/altophp/json-patch",
+    "homepage": "https://altophp.com/json-patch",
     "support": {
         "issues": "https://github.com/altophp/json-patch/issues",
-        "docs": "https://github.com/altophp/json-patch#readme"
+        "source": "https://github.com/altophp/json-patch",
+        "docs": "https://altophp.com/json-patch"
     },
     "funding": [
         {
@@ -37,9 +38,9 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.94",
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^12.0"
+        "phpunit/phpunit": "^12.5"
     },
     "autoload": {
         "psr-4": {
@@ -52,19 +53,17 @@
         }
     },
     "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
         "sort-packages": true
     },
     "scripts": {
-        "check": [
-            "@cs-check",
-            "@phpstan",
+        "cs": "vendor/bin/php-cs-fixer fix --dry-run --diff --sequential",
+        "cs:fix": "vendor/bin/php-cs-fixer fix --sequential",
+        "qa": [
+            "@cs",
+            "@sa",
             "@test"
         ],
-        "cs-check": "php-cs-fixer fix --dry-run --diff",
-        "cs-fix": "php-cs-fixer fix",
-        "phpstan": "phpstan analyse --level=10",
+        "sa": "vendor/bin/phpstan analyse --memory-limit=-1",
         "test": "phpunit"
     }
 }
