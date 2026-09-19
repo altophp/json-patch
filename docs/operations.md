@@ -1,11 +1,15 @@
-# Applying patches
+# Operations
 
 `JsonPatch::apply()` accepts any PHP value as the document and a list of RFC
 6902 operation arrays. It returns the transformed value.
 
-## Operations
+## Apply all six operations
 
 ```php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
 use Alto\JsonPatch\JsonPatch;
 
 $document = [
@@ -24,6 +28,13 @@ $patch = [
 ];
 
 $result = JsonPatch::apply($document, $patch);
+echo json_encode($result, JSON_THROW_ON_ERROR), "\n";
+```
+
+Output:
+
+```text
+{"name":"Published","tags":["php","json"],"author":"alice","owner":"alice"}
 ```
 
 - `add` inserts or replaces an object member and inserts into a list. The `-`
@@ -47,21 +58,6 @@ $errors = JsonPatch::validate($patch);
 `validate()` checks operation structure without reading a document. An empty
 result means structurally valid; paths may still be missing when applied.
 
-## Handle failures
-
-```php
-use Alto\JsonPatch\Exception\JsonPatchException;
-
-try {
-    $result = JsonPatch::apply($document, $patch);
-} catch (JsonPatchException $error) {
-    // Invalid operation, path, container type, or failed test.
-}
-```
-
-Specific subclasses distinguish invalid operations, missing paths, container
-type mismatches, and failed `test` operations.
-
 ## JSON strings
 
 ```php
@@ -73,4 +69,5 @@ $json = JsonPatch::applyJson(
 
 `applyJson()` decodes JSON into associative arrays and returns compact JSON
 with unescaped Unicode and slashes. Invalid JSON and a non-list patch raise
-`JsonPatchException`.
+`JsonPatchException`. See [Errors](errors.md) for the failure categories and
+recovery boundaries shared by array and JSON-string entry points.

@@ -1,8 +1,13 @@
 # Getting started
 
-Apply a list of operations to an in-memory document:
+After [installation](installation.md), save this as `patch.php` beside `vendor`
+and run `php patch.php`. It applies two operations to an in-memory document.
 
 ```php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
 use Alto\JsonPatch\JsonPatch;
 
 $before = [
@@ -16,20 +21,27 @@ $patch = [
 ];
 
 $after = JsonPatch::apply($before, $patch);
+echo json_encode($after, JSON_THROW_ON_ERROR), "\n";
+printf("original status=%s\n", $before['status']);
+```
+
+Output:
+
+```text
+{"user":{"name":"Alice","role":"admin"},"status":"published"}
+original status=draft
 ```
 
 The original value is unchanged. Operations run in order, and each subsequent
-operation sees the result of the preceding one.
+operation sees the result of the preceding one. The package does not save this
+result to a database or file.
+
+Continue with [Operations](operations.md) for all six operations,
+[Pointers](pointers.md) for property names containing slash or tilde, or
+[Diffing](diffing.md) to generate and replay a patch.
 
 ## Generate the reverse transformation
 
-```php
-$generated = JsonPatch::diff($before, $after);
-$replayed = JsonPatch::apply($before, $generated);
-
-assert($after === $replayed);
-```
-
-Generated operations use JSON Pointer paths. Continue with [Applying](applying.md)
-for all operations, [Diffing](diffing.md) for list strategies, and
-[Pointers](pointers.md) for path escaping.
+To transform the result back into the original value, use
+`JsonPatch::diff($after, $before)`. The opposite argument order generates the
+forward transformation. See the complete [diff-and-replay example](diffing.md).
