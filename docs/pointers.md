@@ -23,14 +23,26 @@ valid only for appending with an `add` operation.
 Within one segment, `~1` represents `/` and `~0` represents `~`:
 
 ```php
-$document = [
-    'a/b' => ['~key' => 'value'],
-];
+<?php
 
-echo JsonPatch::get($document, '/a~1b/~0key');
+require __DIR__.'/vendor/autoload.php';
+
+use Alto\JsonPatch\JsonPatch;
+
+$document = ['a/b' => ['~key' => 'value']];
+echo JsonPatch::get($document, '/a~1b/~0key'), "\n";
 ```
 
-Invalid escape sequences raise `JsonPatchException`.
+Output:
+
+```text
+value
+```
+
+Invalid escape sequences raise `JsonPatchException`. Escape each property-name
+segment separately: replace `~` with `~0`, then `/` with `~1`. Do not escape the
+slashes that separate segments. For missing paths, inspect the actual container
+and list indices before applying the operation.
 
 ## Inspect a pointer
 

@@ -55,12 +55,29 @@ $patch = [
 ];
 
 $result = JsonPatch::apply($document, $patch);
+echo json_encode($result, JSON_THROW_ON_ERROR);
 ```
 
 The original value is unchanged. Operations run in order, and each operation sees the result of
-the preceding one.
+the preceding one. The example prints:
 
-## Applying Patches
+```text
+{"user":{"name":"Alice","role":"admin"},"status":"published"}
+```
+
+## Documentation
+
+- [Installation](docs/installation.md)
+- [Getting started](docs/getting-started.md)
+- [Operations](docs/operations.md)
+- [Pointers](docs/pointers.md)
+- [Diffing](docs/diffing.md)
+- [Errors](docs/errors.md)
+
+The [documentation index](docs/index.md) lists these pages in site navigation
+order.
+
+## Operations
 
 `JsonPatch::apply()` supports every RFC 6902 operation:
 
@@ -74,7 +91,8 @@ the preceding one.
 | `test` | Assert that a value matches |
 
 Use `JsonPatch::applyJson()` to work directly with JSON strings. Read
-[Applying patches](docs/applying.md) for path rules, validation, JSON handling, and failures.
+[Operations](docs/operations.md) for ordered semantics, validation, and JSON
+handling. [Errors](docs/errors.md) covers runtime failures and recovery.
 
 ## Generating Patches
 
