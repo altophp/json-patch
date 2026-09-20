@@ -1,14 +1,17 @@
 * text=auto eol=lf
 
-/.editorconfig               export-ignore
 /.gitattributes              export-ignore
 /.github                     export-ignore
 /.gitignore                  export-ignore
 /.php-cs-fixer.dist.php      export-ignore
+/composer.lock               export-ignore
 /docs                        export-ignore
 /phpstan.neon.dist           export-ignore
 /phpunit.xml.dist            export-ignore
 /tests                       export-ignore
 
 /docs/**                     linguist-documentation
+/tests/Fixtures/**           -linguist-detectable
 /tests/fixtures/**           -linguist-detectable
+
+/.editorconfig               export-ignore
